@@ -20,8 +20,8 @@ import (
 	"reflect"
 
 	"yunion.io/x/log"
-	"yunion.io/x/pkg/util/reflectutils"
 	"yunion.io/x/pkg/errors"
+	"yunion.io/x/pkg/util/reflectutils"
 )
 
 /*
@@ -138,7 +138,7 @@ func (ts *STableSpec) updateFields(dt interface{}, fields map[string]interface{}
 	if DEBUG_SQLCHEMY || debug {
 		log.Infof("Update: %s", buf.String())
 	}
-	results, err := _db.Exec(buf.String(), vars...)
+	results, err := _db.DoExec("UpdateFields", ts.Name(), buf.String(), vars...)
 	if err != nil {
 		return err
 	}

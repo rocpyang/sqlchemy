@@ -443,13 +443,34 @@ func (tq *SQuery) SubQuery() *SSubQuery {
 	return &sq
 }
 
+func (tq *SQuery) Name() string {
+	tName := "Unknown"
+	if tq.from != nil {
+		switch from := tq.from.(type) {
+		case *STable:
+			tName = from.spec.Name()
+		case *SSubQuery:
+			sq, can := from.query.(*SQuery)
+			if can {
+				tName = sq.Name()
+			} else {
+				log.Infof("SQuery Unknown from type %s", reflect.TypeOf(from.query))
+			}
+		default:
+			log.Infof("SQuery Unknown from type %T", from)
+		}
+	}
+	return tName
+}
+
 func (tq *SQuery) Row() *sql.Row {
 	sqlstr := tq.String()
 	vars := tq.Variables()
 	if DEBUG_SQLCHEMY {
 		log.Debugf("SQuery %s with vars: %s", sqlstr, vars)
 	}
-	return _db.QueryRow(sqlstr, vars...)
+	tName := tq.Name()
+	return _db.QueryRow("QueryRow", tName, sqlstr, vars...)
 }
 
 func (tq *SQuery) Rows() (*sql.Rows, error) {
@@ -458,7 +479,8 @@ func (tq *SQuery) Rows() (*sql.Rows, error) {
 	if DEBUG_SQLCHEMY {
 		log.Debugf("SQuery %s with vars: %s", sqlstr, vars)
 	}
-	return _db.Query(sqlstr, vars...)
+	tName := tq.Name()
+	return _db.Query("Query", tName, sqlstr, vars...)
 }
 
 // deprecated
@@ -557,7 +579,7 @@ func rowScan2StringMap(fields []string, row IRowScanner) (map[string]string, err
 	}
 	results := make(map[string]string)
 	for i, f := range fields {
-		//log.Debugf("%d %s: %s", i, f, targets[i])
+		// log.Debugf("%d %s: %s", i, f, targets[i])
 		rawValue := reflect.Indirect(reflect.ValueOf(targets[i]))
 		if rawValue.Interface() == nil {
 			results[f] = ""

@@ -125,7 +125,7 @@ func (t *STableSpec) incrementInternal(diff interface{}, opcode string, target i
 		log.Infof("Update: %s %s", buf.String(), vars)
 	}
 
-	results, err := _db.Exec(buf.String(), vars...)
+	results, err := _db.DoExec("IncrementInternal", t.Name(), buf.String(), vars...)
 	if err != nil {
 		return errors.Wrapf(err, "_db.Exec %s %#v", buf.String(), vars)
 	}

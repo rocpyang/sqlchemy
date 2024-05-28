@@ -29,7 +29,6 @@ func (t *STableSpec) Insert(dt interface{}) error {
 	return t.insert(dt, false, false)
 }
 
-//
 // MySQL: INSERT INTO ... ON DUPLICATE KEY UPDATE ...
 // works only for the cases that all values of primary keys are determeted before insert
 func (t *STableSpec) InsertOrUpdate(dt interface{}) error {
@@ -165,7 +164,7 @@ func (t *STableSpec) insert(data interface{}, update bool, debug bool) error {
 		log.Debugf("%s values: %v", insertSql, values)
 	}
 
-	results, err := _db.Exec(insertSql, values...)
+	results, err := _db.DoExec("Insert", t.Name(), insertSql, values...)
 	if err != nil {
 		return err
 	}

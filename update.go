@@ -177,7 +177,7 @@ func (us *SUpdateSession) saveUpdate(dt interface{}) (UpdateDiffs, error) {
 	if DEBUG_SQLCHEMY {
 		log.Infof("Update: %s %s", buf.String(), vars)
 	}
-	results, err := _db.Exec(buf.String(), vars...)
+	results, err := _db.DoExec("SaveUpdate", us.tableSpec.Name(), buf.String(), vars...)
 	if err != nil {
 		return nil, err
 	}
