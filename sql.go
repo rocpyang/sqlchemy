@@ -154,6 +154,7 @@ func getFileLine() fileLine {
 	fLine := fileLine{}
 	for {
 		frame, more := frames.Next()
+		log.Infof("getFileLine: frame.File %s line %d", frame.File, frame.Line)
 		// 调用方是onecloud
 		if strings.Contains(frame.File, "yunion.io/x/onecloud") && fLine.oneCloudFile == "" {
 			fLine.oneCloudFile = frame.File
